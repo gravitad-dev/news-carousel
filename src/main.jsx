@@ -13,15 +13,15 @@ const router = createBrowserRouter([
     element: <App />,
   },
   {
-    path: "/cnn",
+    path: "cnn",
     element: <CnnPage />,
   },
   {
-    path: "/pais",
+    path: "pais",
     element: <PaisPage />,
   },
   {
-    path: "/reuters",
+    path: "reuters",
     element: <ReuterPage />,
   },
 ]);
