@@ -1,6 +1,5 @@
 import axios from 'axios';
 
-// const VITE_IP_KEY = '4918ecb3de5e4e82bbdea08b5023abe9'; // Reemplaza con tu API key de ipgeolocation.io
 const VITE_IP_KEY = import.meta.env.VITE_IP_KEY;
 
 // Función para obtener la información de ubicación basada en la IP utilizando ipgeolocation.io
@@ -9,11 +8,14 @@ const fetchLocationByIP = async () => {
     const ipInfoResponse = await axios.get(
       `https://api.ipgeolocation.io/ipgeo?apiKey=${VITE_IP_KEY}`
     );
-    const {
-      latitude: lat,
-      longitude: lon,
-      country_code3: country,
-    } = ipInfoResponse.data;
+
+    const { data } = ipInfoResponse;
+
+    if (data.error) {
+      throw new Error(`Error: ${data.error.message}`);
+    }
+
+    const { latitude: lat, longitude: lon, country_code3: country } = data;
     return { lat, lon, country };
   } catch (error) {
     console.error('Error getting location by IP:', error);
@@ -27,7 +29,16 @@ export const fetchCountryByIP = async () => {
     const { country } = await fetchLocationByIP();
     return country;
   } catch (error) {
-    console.error('Error getting country by IP:', error);
-    return null;
+    // Manejar el caso específico de error de bloqueo por adblock
+    if (error.response && error.response.status === 403) {
+      console.error(
+        'La solicitud fue bloqueada por un bloqueador de anuncios.'
+      );
+      // Puedes mostrar un mensaje al usuario o sugerir una acción alternativa
+      return null;
+    } else {
+      console.error('Error getting country by IP:', error);
+      return null;
+    }
   }
 };
