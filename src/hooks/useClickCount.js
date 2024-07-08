@@ -13,49 +13,55 @@ export const useClickCount = () => {
 
   const location = useLocation();
 
-  const handleClick = () => {
+  const handleClick = (country) => {
     const newClickCounts = clickCounts + 1;
     setClickCounts(newClickCounts);
+    sendClickCounts(newClickCounts, country); // Llamar a sendClickCounts con los nuevos clics y el país
     // Guardar los clics actualizados en el almacenamiento local
     localStorage.setItem('clickCounts', JSON.stringify(newClickCounts));
   };
 
-  const sendClickCounts = async () => {
-    let counts =
-      JSON.parse(localStorage.getItem('clickCounts')) || INITIAL_COUNTS;
+  const sendClickCounts = async (counts, country) => {
     const advertisingId = location.pathname.split('/')[3];
     // validar que no se envie vacio
     if (counts > 0) {
-      axiosInstance
-        .post(
+      try {
+        const response = await axiosInstance.post(
           `/clickCounts/${advertisingId}`,
           {
             counts,
+            country,
           },
           {
             headers: {
               'Content-Type': 'application/json',
             },
           }
-        )
-        .then((response) => {
-          console.log('Click counts sent:', response.data);
-        })
-        .catch((error) => {
-          console.error('Error sending click counts:', error);
-        });
+        );
+        console.log('Click counts sent:', response.data);
+      } catch (error) {
+        console.error('Error sending click counts:', error);
+      }
     }
   };
 
   useEffect(() => {
-    const interval = setInterval(sendClickCounts, 10000);
-    window.addEventListener('beforeunload', sendClickCounts);
+    const interval = setInterval(() => {
+      sendClickCounts(clickCounts, '');
+    }, 10000);
+
+    window.addEventListener('beforeunload', () => {
+      sendClickCounts(clickCounts, '');
+    });
+
     return () => {
       // Limpiar estado y localstorage al desmontar componente
       localStorage.removeItem('clickCounts');
       setClickCounts(INITIAL_COUNTS);
       clearInterval(interval);
-      window.removeEventListener('beforeunload', sendClickCounts);
+      window.removeEventListener('beforeunload', () => {
+        sendClickCounts(clickCounts, '');
+      });
     };
   }, []);
 
