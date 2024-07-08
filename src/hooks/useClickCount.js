@@ -18,14 +18,11 @@ export const useClickCount = () => {
     country && setCntry(country);
     const newClickCounts = clickCounts + 1;
     setClickCounts(newClickCounts);
-    sendClickCounts(newClickCounts, country); // Llamar a sendClickCounts con los nuevos clics y el país
-    // Guardar los clics actualizados en el almacenamiento local
-    localStorage.setItem('clickCounts', JSON.stringify(newClickCounts));
   };
 
   const sendClickCounts = async (counts, country) => {
     const advertisingId = location.pathname.split('/')[3];
-    // validar que no se envie vacio
+    // validar que no se envíe vacío
     if (counts > 0) {
       try {
         const response = await axiosInstance.post(
@@ -41,31 +38,23 @@ export const useClickCount = () => {
           }
         );
         console.log('Click counts sent:', response.data);
+        // Limpiar el estado local solo después de que se envíe con éxito
+        localStorage.setItem('clickCounts', JSON.stringify(0));
+        setClickCounts(0);
       } catch (error) {
         console.error('Error sending click counts:', error);
+        // En caso de error, guardar el estado localmente y tratar de enviar de nuevo
+        localStorage.setItem('clickCounts', JSON.stringify(counts));
       }
     }
   };
 
   useEffect(() => {
-    const interval = setInterval(() => {
+    // Llamar a sendClickCounts cuando clickCounts cambia y no es cero
+    if (clickCounts > 0) {
       sendClickCounts(clickCounts, cntry);
-    }, 10000);
-
-    window.addEventListener('beforeunload', () => {
-      sendClickCounts(clickCounts, cntry);
-    });
-
-    return () => {
-      // Limpiar estado y localstorage al desmontar componente
-      localStorage.removeItem('clickCounts');
-      setClickCounts(INITIAL_COUNTS);
-      clearInterval(interval);
-      window.removeEventListener('beforeunload', () => {
-        sendClickCounts(clickCounts, cntry);
-      });
-    };
-  }, []);
+    }
+  }, [clickCounts, cntry]);
 
   return {
     clickCounts,
