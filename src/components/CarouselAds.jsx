@@ -12,7 +12,7 @@ import { fetchCountryByIP } from '../services/getCountry';
 
 function CarouselAds({ data }) {
   const [imagesArr, setImagesArr] = useState([]);
-  const [country, setCountry] = useState(null);
+  const [country, setCountry] = useState('INT');
   const plugin = React.useRef(
     Autoplay({ delay: 5000, stopOnInteraction: false })
   );
@@ -20,14 +20,11 @@ function CarouselAds({ data }) {
   useEffect(() => {
     const sortedData = [...data].sort((a, b) => a.order - b.order);
     setImagesArr(sortedData);
-  }, [data]);
-
-  useEffect(() => {
     const fetchCountry = async () => {
       setCountry(await fetchCountryByIP());
     };
     fetchCountry();
-  }, []);
+  }, [data]);
 
   const { clickCounts, handleClick } = useClickCount();
 
