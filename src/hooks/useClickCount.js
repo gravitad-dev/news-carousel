@@ -5,6 +5,7 @@ import { useLocation } from 'react-router-dom';
 const INITIAL_COUNTS = 0;
 
 export const useClickCount = () => {
+  const [cntry, setCntry] = useState();
   const [clickCounts, setClickCounts] = useState(() => {
     // Obtener el contador de clics del almacenamiento local al cargar el componente
     const savedCounts = localStorage.getItem('clickCounts');
@@ -14,6 +15,7 @@ export const useClickCount = () => {
   const location = useLocation();
 
   const handleClick = (country) => {
+    country && setCntry(country);
     const newClickCounts = clickCounts + 1;
     setClickCounts(newClickCounts);
     sendClickCounts(newClickCounts, country); // Llamar a sendClickCounts con los nuevos clics y el país
@@ -47,11 +49,11 @@ export const useClickCount = () => {
 
   useEffect(() => {
     const interval = setInterval(() => {
-      sendClickCounts(clickCounts, '');
+      sendClickCounts(clickCounts, cntry);
     }, 10000);
 
     window.addEventListener('beforeunload', () => {
-      sendClickCounts(clickCounts, '');
+      sendClickCounts(clickCounts, cntry);
     });
 
     return () => {
@@ -60,7 +62,7 @@ export const useClickCount = () => {
       setClickCounts(INITIAL_COUNTS);
       clearInterval(interval);
       window.removeEventListener('beforeunload', () => {
-        sendClickCounts(clickCounts, '');
+        sendClickCounts(clickCounts, cntry);
       });
     };
   }, []);
