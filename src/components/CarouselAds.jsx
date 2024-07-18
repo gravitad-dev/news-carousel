@@ -9,6 +9,7 @@ import {
 import Autoplay from 'embla-carousel-autoplay';
 import { useClickCount } from '../hooks/useClickCount';
 import { fetchCountryByIP } from '../services/getCountry';
+import { useParams } from 'react-router-dom';
 
 function CarouselAds({ data }) {
   const [imagesArr, setImagesArr] = useState([]);
@@ -16,6 +17,7 @@ function CarouselAds({ data }) {
   const plugin = React.useRef(
     Autoplay({ delay: 5000, stopOnInteraction: false })
   );
+  const { campaignId } = useParams();
 
   useEffect(() => {
     const sortedData = [...data].sort((a, b) => a.order - b.order);
@@ -42,15 +44,18 @@ function CarouselAds({ data }) {
       >
         <CarouselContent>
           {imagesArr.map((element, index) => (
-            <CarouselItem key={element.id} onClick={() => handleClick(country)}>
-              <div className="">
-                <div className="flex h-[130px] md:h-[140px]">
-                  <img
-                    src={element.image.url}
-                    alt={element.name}
-                    className="w-full object-cover object-center"
-                  />
-                </div>
+            <CarouselItem
+              key={element.id}
+              id={campaignId}
+              onClick={() => handleClick(country)}
+            >
+              <div className="flex h-[130px] md:h-[140px]">
+                <img
+                  src={element.image.url}
+                  alt={element.name}
+                  id={index === 0 ? 'firstCarouselImage' : ''}
+                  className="w-full object-cover object-center"
+                />
               </div>
             </CarouselItem>
           ))}
