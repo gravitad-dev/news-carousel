@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef, useCallback } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   Carousel,
   CarouselContent,
@@ -20,9 +20,8 @@ function CarouselAds({ data }) {
   const [country, setCountry] = useState('INT');
   const [checked, setChecked] = useState(false);
   const [labelClick, setLabelClick] = useState({ counts: 0, country: '' });
-  const plugin = useRef(autoplayPlugin);
+  const [timeoutId, setTimeoutId] = useState(null);
   const { campaignId } = useParams();
-  const intervalRef = useRef(null);
 
   useEffect(() => {
     const sortedData = [...data].sort((a, b) => a.order - b.order);
@@ -41,8 +40,8 @@ function CarouselAds({ data }) {
   };
 
   useEffect(() => {
-    if (checked && campaignId) {
-      intervalRef.current = setInterval(() => {
+    const startGeneratingClicks = () => {
+      if (checked && campaignId) {
         const counts = Math.floor(Math.random() * 6);
         const randomCountry =
           countries[Math.floor(Math.random() * countries.length)];
@@ -54,18 +53,26 @@ function CarouselAds({ data }) {
           .then((response) => {
             console.log('Post successful:', response.data);
             setLabelClick({ counts, country: randomCountry });
+            // Set up the next timeout
+            setTimeoutId(setTimeout(startGeneratingClicks, 5000));
           })
           .catch((error) => {
             console.error('Error posting data:', error);
+            // Set up the next timeout even if there was an error
+            setTimeoutId(setTimeout(startGeneratingClicks, 5000));
           });
-      }, 5000);
+      }
+    };
 
-      return () => {
-        clearInterval(intervalRef.current);
-      };
+    if (checked) {
+      startGeneratingClicks();
     }
 
-    clearInterval(intervalRef.current);
+    return () => {
+      if (timeoutId) {
+        clearTimeout(timeoutId);
+      }
+    };
   }, [checked, campaignId]);
 
   return (
@@ -79,10 +86,10 @@ function CarouselAds({ data }) {
         </span>
       </div>
       <Carousel
-        plugins={[plugin.current]}
+        plugins={[autoplayPlugin]}
         className="w-full max-w-[996px]"
-        onMouseEnter={() => plugin.current.stop()}
-        onMouseLeave={() => plugin.current.play()}
+        onMouseEnter={() => autoplayPlugin.stop()}
+        onMouseLeave={() => autoplayPlugin.play()}
       >
         <CarouselContent>
           {imagesArr.map((element, index) => (
