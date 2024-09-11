@@ -1,12 +1,12 @@
 import axios from 'axios';
 
-const VITE_IP_KEY = import.meta.env.VITE_IP_KEY;
+const VITE_IP_K = import.meta.env.VITE_IP_K;
 
 // Función para obtener la información de ubicación basada en la IP utilizando ipgeolocation.io
 const fetchLocationByIP = async () => {
   try {
     const ipInfoResponse = await axios.get(
-      `https://api.ipgeolocation.io/ipgeo?apiKey=${VITE_IP_KEY}`
+      `https://api.ipgeolocation.io/ipgeo?apiKey=${VITE_IP_K}`
     );
 
     const { data } = ipInfoResponse;
