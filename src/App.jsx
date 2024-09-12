@@ -13,14 +13,28 @@ function App() {
     const fetchData = async () => {
       const result = await getAllProjects();
       setProjects(result);
+
+      const savedMode = localStorage.getItem('mode');
+      if (savedMode) {
+        setMode(savedMode);
+      }
+
+      const savedProjectId = localStorage.getItem('selectedProject');
+      const savedCampaignId = localStorage.getItem('selectedCampaign');
+
+      if (savedProjectId) {
+        const project = result.find((p) => p._id === savedProjectId);
+        setSelectedProject(project);
+
+        if (savedCampaignId) {
+          const campaign = project.advertisingIds.find(
+            (c) => c.id === savedCampaignId
+          );
+          setSelectedCampaign(campaign);
+        }
+      }
     };
     fetchData();
-
-    // Leer el modo desde localStorage
-    const savedMode = localStorage.getItem('mode');
-    if (savedMode) {
-      setMode(savedMode);
-    }
   }, []);
 
   const handleProjectChange = (e) => {
@@ -28,6 +42,8 @@ function App() {
     const project = projects.find((p) => p._id === projectId);
     setSelectedProject(project);
     setSelectedCampaign(null);
+    localStorage.setItem('selectedProject', projectId);
+    localStorage.removeItem('selectedCampaign');
   };
 
   const handleCampaignChange = (e) => {
@@ -36,17 +52,17 @@ function App() {
       (c) => c.id === campaignId
     );
     setSelectedCampaign(campaign);
+    localStorage.setItem('selectedCampaign', campaignId);
   };
 
   const handleModeChange = (e) => {
     const newMode = e.target.value;
     setMode(newMode);
-    localStorage.setItem('mode', newMode); // Guarda el modo en localStorage
+    localStorage.setItem('mode', newMode);
   };
 
   const goToAnalytics = () => {
     if (selectedProject && selectedCampaign) {
-      // Navegar dependiendo del modo seleccionado
       if (mode === 'testing') {
         navigate(
           `/analytics/testing/${selectedProject._id}/${selectedCampaign.id}`
@@ -62,14 +78,14 @@ function App() {
       <h1 className="flex text-2xl text-gray-100 font-semibold uppercase pt-[120px]">
         Carousels Advertising
       </h1>
-      <div className="flex flex-col gap-2 bg-gray-700 w-[260px]  px-8 py-4 rounded-md shadow-lg mt-5">
+      <div className="flex flex-col gap-2 bg-gray-700 w-[260px] px-8 py-4 rounded-md shadow-lg mt-5">
         <label className="text-gray-300">Select Mode:</label>
         <select value={mode} onChange={handleModeChange}>
           <option value="normal">Normal</option>
           <option value="testing">Testing (Clicks)</option>
         </select>
       </div>
-      <div className="flex flex-col gap-2 bg-gray-700 w-[260px]  px-8 py-4 rounded-md shadow-lg mt-5">
+      <div className="flex flex-col gap-2 bg-gray-700 w-[260px] px-8 py-4 rounded-md shadow-lg mt-5">
         <Link
           to={mode === 'testing' ? '/cnn/testing' : '/cnn'}
           className="text-gray-300 hover:text-white"
@@ -90,7 +106,7 @@ function App() {
         </Link>
       </div>
 
-      <div className="flex flex-col gap-2 bg-gray-700 w-[260px]  px-8 py-4 rounded-md shadow-lg mt-5">
+      <div className="flex flex-col gap-2 bg-gray-700 w-[260px] px-8 py-4 rounded-md shadow-lg mt-5">
         <p className="text-gray-300">
           To edit the content of the carousels go to:{' '}
         </p>
@@ -102,7 +118,7 @@ function App() {
         </a>
       </div>
 
-      <div className="flex flex-col gap-2 bg-gray-700 w-[260px]  px-8 py-4 rounded-md shadow-lg mt-5">
+      <div className="flex flex-col gap-2 bg-gray-700 w-[260px] px-8 py-4 rounded-md shadow-lg mt-5">
         <button
           onClick={goToAnalytics}
           className={`text-gray-300 hover:text-white ${
@@ -116,7 +132,10 @@ function App() {
         </button>
 
         <label className="text-gray-300">Select Project:</label>
-        <select onChange={handleProjectChange}>
+        <select
+          onChange={handleProjectChange}
+          value={selectedProject?._id || ''}
+        >
           <option value="">Select a project</option>
           {projects &&
             projects.map((project) => (
@@ -128,9 +147,12 @@ function App() {
       </div>
 
       {selectedProject && (
-        <div className="flex flex-col gap-2 bg-gray-700 w-[260px]  px-8 py-4 rounded-md shadow-lg mt-5">
+        <div className="flex flex-col gap-2 bg-gray-700 w-[260px] px-8 py-4 rounded-md shadow-lg mt-5">
           <label className="text-gray-300">Select Campaign:</label>
-          <select onChange={handleCampaignChange}>
+          <select
+            onChange={handleCampaignChange}
+            value={selectedCampaign?.id || ''}
+          >
             <option value="">Select a campaign</option>
             {selectedProject.advertisingIds.map((campaign) => (
               <option key={campaign.id} value={campaign.id}>
