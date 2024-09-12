@@ -21,7 +21,8 @@ export const useClickCount = () => {
   };
 
   const sendClickCounts = async (counts, country) => {
-    const advertisingId = location.pathname.split('/')[4];
+    let advertisingId = location.pathname.split('/')[4];
+    if (!advertisingId) advertisingId = location.pathname.split('/')[3];
     // validar que no se envíe vacío
     if (counts > 0 && advertisingId) {
       try {
