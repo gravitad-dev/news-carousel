@@ -6,6 +6,7 @@ function App() {
   const [projects, setProjects] = useState(null);
   const [selectedProject, setSelectedProject] = useState(null);
   const [selectedCampaign, setSelectedCampaign] = useState(null);
+  const [mode, setMode] = useState('normal');
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -14,6 +15,12 @@ function App() {
       setProjects(result);
     };
     fetchData();
+
+    // Leer el modo desde localStorage
+    const savedMode = localStorage.getItem('mode');
+    if (savedMode) {
+      setMode(savedMode);
+    }
   }, []);
 
   const handleProjectChange = (e) => {
@@ -31,9 +38,22 @@ function App() {
     setSelectedCampaign(campaign);
   };
 
+  const handleModeChange = (e) => {
+    const newMode = e.target.value;
+    setMode(newMode);
+    localStorage.setItem('mode', newMode); // Guarda el modo en localStorage
+  };
+
   const goToAnalytics = () => {
     if (selectedProject && selectedCampaign) {
-      navigate(`/analytics/${selectedProject._id}/${selectedCampaign.id}`);
+      // Navegar dependiendo del modo seleccionado
+      if (mode === 'testing') {
+        navigate(
+          `/analytics/testing/${selectedProject._id}/${selectedCampaign.id}`
+        );
+      } else {
+        navigate(`/analytics/${selectedProject._id}/${selectedCampaign.id}`);
+      }
     }
   };
 
@@ -43,13 +63,29 @@ function App() {
         Carousels Advertising
       </h1>
       <div className="flex flex-col gap-2 bg-gray-700 w-[260px]  px-8 py-4 rounded-md shadow-lg mt-5">
-        <Link to={'/cnn'} className="text-gray-300 hover:text-white">
+        <label className="text-gray-300">Select Mode:</label>
+        <select value={mode} onChange={handleModeChange}>
+          <option value="normal">Normal</option>
+          <option value="testing">Testing (Clicks)</option>
+        </select>
+      </div>
+      <div className="flex flex-col gap-2 bg-gray-700 w-[260px]  px-8 py-4 rounded-md shadow-lg mt-5">
+        <Link
+          to={mode === 'testing' ? '/cnn/testing' : '/cnn'}
+          className="text-gray-300 hover:text-white"
+        >
           Cnn
         </Link>
-        <Link to={'/pais'} className="text-gray-300 hover:text-white">
+        <Link
+          to={mode === 'testing' ? '/pais/testing' : '/pais'}
+          className="text-gray-300 hover:text-white"
+        >
           El país
         </Link>
-        <Link to={'/reuters'} className="text-gray-300 hover:text-white">
+        <Link
+          to={mode === 'testing' ? '/reuters/testing' : '/reuters'}
+          className="text-gray-300 hover:text-white"
+        >
           Reuters
         </Link>
       </div>
@@ -78,6 +114,7 @@ function App() {
         >
           Zafir Analytics
         </button>
+
         <label className="text-gray-300">Select Project:</label>
         <select onChange={handleProjectChange}>
           <option value="">Select a project</option>

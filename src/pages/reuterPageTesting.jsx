@@ -2,11 +2,13 @@ import React, { Suspense, lazy, useEffect, useState } from 'react';
 import { getReutersData } from '@/services/graphql.services';
 
 //components
-const CarouselAds = lazy(() => import('@/components/CarouselAds'));
+const CarouselAdsTesting = lazy(() =>
+  import('@/components/CarouselAdsTesting')
+);
 const Frame = lazy(() => import('@/components/Frame'));
 
 // Works also with SSR as expected
-export function ReuterPage() {
+export function ReuterPageTesting() {
   const [data, setData] = useState(null);
 
   useEffect(() => {
@@ -27,7 +29,7 @@ export function ReuterPage() {
     <div className="bg-[#2c2c2c] w-full h-[100vh]">
       <div className="adsConatiner">
         <Suspense fallback={<p>Loading...</p>}>
-          {data && <CarouselAds data={data} />}
+          {data && <CarouselAdsTesting data={data} />}
         </Suspense>
       </div>
     </div>

@@ -8,7 +8,7 @@ const CarouselAds = lazy(() => import('@/components/CarouselAds'));
 // const Frame = lazy(() => import('@/components/Frame'));
 
 // Works also with SSR as expected
-function AnalyticsPage() {
+export function AnalyticsPage() {
   const [data, setData] = useState(null);
   const { projectId, campaignId } = useParams();
 
@@ -38,5 +38,3 @@ function AnalyticsPage() {
     </div>
   );
 }
-
-export default AnalyticsPage;

@@ -1,12 +1,12 @@
-import React, { Suspense, lazy, useEffect, useState } from "react";
-import {getPaisData} from "@/services/graphql.services";
+import React, { Suspense, lazy, useEffect, useState } from 'react';
+import { getPaisData } from '@/services/graphql.services';
 
 //components
-const CarouselAds = lazy(() => import("@/components/CarouselAds"));
-const Frame = lazy(() => import("@/components/Frame"));
+const CarouselAds = lazy(() => import('@/components/CarouselAds'));
+const Frame = lazy(() => import('@/components/Frame'));
 
 // Works also with SSR as expected
-function PaisPage() {
+export function PaisPage() {
   const [data, setData] = useState(null);
 
   useEffect(() => {
@@ -15,7 +15,7 @@ function PaisPage() {
         let result = await getPaisData();
         setData(result);
       } catch (error) {
-        console.error("Error fetching data:", error);
+        console.error('Error fetching data:', error);
       }
     };
     fetchData();
@@ -33,5 +33,3 @@ function PaisPage() {
     </div>
   );
 }
-
-export default PaisPage;

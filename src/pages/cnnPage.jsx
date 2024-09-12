@@ -1,12 +1,12 @@
-import React, { Suspense, lazy, useEffect, useState } from "react";
-import {getCnnData} from "@/services/graphql.services";
+import React, { Suspense, lazy, useEffect, useState } from 'react';
+import { getCnnData } from '@/services/graphql.services';
 
 //components
-const CarouselAds = lazy(() => import("@/components/CarouselAds"));
-const Frame = lazy(() => import("@/components/Frame"));
+const CarouselAds = lazy(() => import('@/components/CarouselAds'));
+const Frame = lazy(() => import('@/components/Frame'));
 
 // Works also with SSR as expected
-function CnnPage() {
+export function CnnPage() {
   const [data, setData] = useState(null);
 
   useEffect(() => {
@@ -15,7 +15,7 @@ function CnnPage() {
         let result = await getCnnData();
         setData(result);
       } catch (error) {
-        console.error("Error fetching data:", error);
+        console.error('Error fetching data:', error);
       }
     };
     fetchData();
@@ -33,5 +33,3 @@ function CnnPage() {
     </div>
   );
 }
-
-export default CnnPage;
