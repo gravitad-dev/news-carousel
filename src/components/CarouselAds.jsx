@@ -3,6 +3,8 @@ import {
   Carousel,
   CarouselContent,
   CarouselItem,
+  CarouselNext,
+  CarouselPrevious,
 } from '@/components/ui/carousel';
 import Autoplay from 'embla-carousel-autoplay';
 import { useClickCount } from '../hooks/useClickCount';
@@ -18,10 +20,8 @@ function CarouselAds({ data }) {
   const [country, setCountry] = useState('INT');
   const [checked, setChecked] = useState(false);
   const [labelClick, setLabelClick] = useState({ counts: 0, country: '' });
+  const [timeoutId, setTimeoutId] = useState(null);
   const { campaignId } = useParams();
-
-  // Estado para guardar la referencia al timeout
-  const [timeoutRef, setTimeoutRef] = useState(null);
 
   useEffect(() => {
     const sortedData = [...data].sort((a, b) => a.order - b.order);
@@ -35,56 +35,43 @@ function CarouselAds({ data }) {
 
   const { clickCounts, handleClick } = useClickCount();
 
-  // Función para iniciar la generación de clicks automáticos
-  const startGeneratingClicks = () => {
-    if (checked && campaignId) {
-      const counts = Math.floor(Math.random() * 6);
-      const randomCountry =
-        countries[Math.floor(Math.random() * countries.length)];
-
-      axiosInstance
-        .post(`/clickCounts/${campaignId}`, {
-          counts,
-          country: randomCountry,
-        })
-        .then((response) => {
-          console.log('Post successful:', response.data);
-          setLabelClick({ counts, country: randomCountry });
-
-          if (checked) {
-            const newTimeoutId = setTimeout(startGeneratingClicks, 5000);
-            setTimeoutRef(newTimeoutId);
-          }
-        })
-        .catch((error) => {
-          console.error('Error posting data:', error);
-
-          if (checked) {
-            const newTimeoutId = setTimeout(startGeneratingClicks, 5000);
-            setTimeoutRef(newTimeoutId);
-          }
-        });
-    }
+  const handleSwitchChange = () => {
+    setChecked((prevChecked) => !prevChecked);
   };
 
-  // Función para detener la generación de clicks automáticos
-  const stopGeneratingClicks = () => {
-    if (timeoutRef) {
-      clearTimeout(timeoutRef); // Detiene el timeout activo
-      setTimeoutRef(null); // Limpia la referencia
-    }
-  };
-
-  // Efecto para manejar el estado de checked
   useEffect(() => {
+    const startGeneratingClicks = () => {
+      if (checked && campaignId) {
+        const counts = Math.floor(Math.random() * 6);
+        const randomCountry =
+          countries[Math.floor(Math.random() * countries.length)];
+        axiosInstance
+          .post(`/clickCounts/${campaignId}`, {
+            counts,
+            country: randomCountry,
+          })
+          .then((response) => {
+            console.log('Post successful:', response.data);
+            setLabelClick({ counts, country: randomCountry });
+            // Set up the next timeout
+            setTimeoutId(setTimeout(startGeneratingClicks, 5000));
+          })
+          .catch((error) => {
+            console.error('Error posting data:', error);
+            // Set up the next timeout even if there was an error
+            setTimeoutId(setTimeout(startGeneratingClicks, 5000));
+          });
+      }
+    };
+
     if (checked) {
       startGeneratingClicks();
-    } else {
-      stopGeneratingClicks();
     }
 
     return () => {
-      stopGeneratingClicks();
+      if (timeoutId) {
+        clearTimeout(timeoutId);
+      }
     };
   }, [checked, campaignId]);
 
@@ -122,13 +109,15 @@ function CarouselAds({ data }) {
             </CarouselItem>
           ))}
         </CarouselContent>
+        {/* <CarouselPrevious />
+        <CarouselNext /> */}
       </Carousel>
       <div className="flex flex-col right-0 mr-4 absolute items-center space-x-4 mt-4 text-white">
         <span>Generate Clicks</span>
         <input
           type="checkbox"
           checked={checked}
-          onChange={() => setChecked((prevChecked) => !prevChecked)}
+          onChange={handleSwitchChange}
           className="toggle-switch"
         />
       </div>
