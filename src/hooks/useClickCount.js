@@ -21,9 +21,9 @@ export const useClickCount = () => {
   };
 
   const sendClickCounts = async (counts, country) => {
-    const advertisingId = location.pathname.split('/')[3];
+    const advertisingId = location.pathname.split('/')[4];
     // validar que no se envíe vacío
-    if (counts > 0) {
+    if (counts > 0 && advertisingId) {
       try {
         const response = await axiosInstance.post(
           `/clickCounts/${advertisingId}`,
@@ -46,6 +46,9 @@ export const useClickCount = () => {
         // En caso de error, guardar el estado localmente y tratar de enviar de nuevo
         localStorage.setItem('clickCounts', JSON.stringify(counts));
       }
+    } else {
+      localStorage.setItem('clickCounts', JSON.stringify(0));
+      setClickCounts(0);
     }
   };
 
