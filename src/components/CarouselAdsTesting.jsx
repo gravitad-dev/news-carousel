@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import {
   Carousel,
   CarouselContent,
@@ -20,6 +20,10 @@ function CarouselAdsTesting({ data }) {
   const [labelClick, setLabelClick] = useState({ counts: 0, country: '' });
   const { campaignId } = useParams();
 
+  // probando rangos de clicks
+  const [minClicks, setMinClicks] = useState(0);
+  const [maxClicks, setMaxClicks] = useState(0);
+
   // Estado para guardar la referencia al timeout
   const [timeoutRef, setTimeoutRef] = useState(null);
 
@@ -35,21 +39,37 @@ function CarouselAdsTesting({ data }) {
 
   const { clickCounts, handleClick } = useClickCount();
 
+  // Función para generar el número aleatorio
+  const generateRandomNumber = (min, max) => {
+    return Math.floor(Math.random() * (max - min + 1)) + min;
+  };
+
   // Función para iniciar la generación de clicks automáticos
   const startGeneratingClicks = () => {
-    if (checked && campaignId) {
-      const counts = Math.floor(Math.random() * 6);
+    if (checked && campaignId && maxClicks !== 0) {
+      const min = parseInt(minClicks, 10);
+      const max = parseInt(maxClicks, 10);
+      let random = 0;
+
+      if (!isNaN(min) && !isNaN(max) && min <= max) {
+        random = generateRandomNumber(min, max);
+      } else {
+        alert('Por favor, ingrese valores válidos para minClick y maxClick.');
+      }
+
       const randomCountry =
         countries[Math.floor(Math.random() * countries.length)];
 
+      setLabelClick({ counts: random, country: randomCountry });
+
       axiosInstance
         .post(`/clickCounts/${campaignId}`, {
-          counts,
+          counts: random,
           country: randomCountry,
         })
         .then((response) => {
           console.log('Post successful:', response.data);
-          setLabelClick({ counts, country: randomCountry });
+          setLabelClick({ counts: random, country: randomCountry });
 
           if (checked) {
             const newTimeoutId = setTimeout(startGeneratingClicks, 5000);
@@ -89,18 +109,18 @@ function CarouselAdsTesting({ data }) {
   }, [checked, campaignId]);
 
   return (
-    <div className="flex justify-center items-center w-full bg-black py-[12px] md:py-[8px] shadow-sm">
-      <div className="flex justify-between items-center">
-        <span className="absolute z-10 bottom-[10px] left-[10px] w-[fit-content] p-2 rounded-md bg-neutral-500 text-white">
+    <div className='flex justify-center items-center w-full bg-black py-[12px] md:py-[8px] shadow-sm'>
+      <div className='flex justify-between items-center'>
+        <span className='absolute z-10 bottom-[10px] left-[10px] w-[fit-content] p-2 rounded-md bg-neutral-500 text-white'>
           {JSON.stringify(clickCounts)}
         </span>
-        <span className="absolute z-10 bottom-[10px] right-[10px] w-[fit-content] p-2 rounded-md bg-neutral-500 text-white">
+        <span className='absolute z-10 bottom-[10px] right-[10px] w-[fit-content] p-2 rounded-md bg-neutral-500 text-white'>
           {`${labelClick.counts} - ${labelClick.country}`}
         </span>
       </div>
       <Carousel
         plugins={[autoplayPlugin]}
-        className="w-full max-w-[996px]"
+        className='w-full max-w-[996px]'
         onMouseEnter={() => autoplayPlugin.stop()}
         onMouseLeave={() => autoplayPlugin.play()}
       >
@@ -111,26 +131,62 @@ function CarouselAdsTesting({ data }) {
               id={campaignId}
               onClick={() => handleClick(country)}
             >
-              <div className="flex h-[130px] md:h-[140px]">
+              <div className='flex h-[130px] md:h-[140px]'>
                 <img
                   src={element.image.url}
                   alt={element.name}
                   id={index === 0 ? 'firstCarouselImage' : ''}
-                  className="w-full object-cover object-center"
+                  className='w-full object-cover object-center'
                 />
               </div>
             </CarouselItem>
           ))}
         </CarouselContent>
       </Carousel>
-      <div className="flex flex-col right-0 mr-4 absolute items-center space-x-4 mt-4 text-white">
-        <span>Generate Clicks</span>
-        <input
-          type="checkbox"
-          checked={checked}
-          onChange={() => setChecked((prevChecked) => !prevChecked)}
-          className="toggle-switch"
-        />
+      <div className=' right-[4vw] mr-4 absolute space-x-4 mt-4 text-white '>
+        <div className='flex flex-row gap-5'>
+          <label htmlFor='min'>
+            <b>Min:</b>
+            <input
+              className='w-10 text-black ml-2 text-center'
+              type='number'
+              name='min'
+              id='min'
+              min={0}
+              onChange={(e) => {
+                setMinClicks(e.target.value);
+              }}
+            />
+          </label>
+          <label htmlFor='max'>
+            <b>Max:</b>
+            <input
+              className='w-10 text-black ml-2 text-center'
+              type='number'
+              name='max'
+              id='max'
+              min={0}
+              onChange={(e) => {
+                setMaxClicks(e.target.value);
+              }}
+            />
+          </label>
+        </div>
+
+        <div className=' mt-4'>
+          <label
+            htmlFor='toggle'
+            className='text-white flex gap-2 items-center '
+          >
+            Generate clicks
+            <input
+              type='checkbox'
+              checked={checked}
+              onChange={() => setChecked((prevChecked) => !prevChecked)}
+              className='toggle-switch cursor-pointer'
+            />
+          </label>
+        </div>
       </div>
     </div>
   );
