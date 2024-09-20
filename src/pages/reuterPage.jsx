@@ -1,22 +1,14 @@
-// ReuterPage.jsx
 import React, { useEffect, useState } from 'react';
+import axios from 'axios';
 
 export const ReuterPage = () => {
   const [iframeSrc, setIframeSrc] = useState('');
 
   useEffect(() => {
-    // Llama a la ruta del backend para obtener el HTML
-    fetch('https://za-backend-1.onrender.com/scraping') // Cambia esto si es necesario
+    axios
+      .get('https://za-backend-1.onrender.com/scraping')
       .then((response) => {
-        if (!response.ok) {
-          throw new Error('Network response was not ok');
-        }
-        return response.text();
-      })
-      .then((html) => {
-        // Crea un objeto Blob y un URL para el iframe
-        const blob = new Blob([html], { type: 'text/html' });
-        setIframeSrc(URL.createObjectURL(blob));
+        setIframeSrc(response.data);
       })
       .catch((error) => {
         console.error('Error fetching HTML:', error);
@@ -26,8 +18,9 @@ export const ReuterPage = () => {
   return (
     <div>
       <iframe
-        src={iframeSrc}
-        style={{ width: '100%', height: '500px', border: 'none' }}
+        srcDoc={iframeSrc}
+        width="100%"
+        className="h-screen"
         title="Reuter Iframe"
       />
     </div>
