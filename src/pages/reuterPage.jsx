@@ -1,28 +1,11 @@
-import React, { useEffect, useState } from 'react';
-import axios from 'axios';
+import { useEffect } from 'react';
 
 export const ReuterPage = () => {
-  const [iframeSrc, setIframeSrc] = useState('');
+  const iframeSrc = 'https://reuters2.vercel.app/';
 
   useEffect(() => {
-    axios
-      .get('https://za-backend-1.onrender.com/scraping')
-      .then((response) => {
-        setIframeSrc(response.data);
-      })
-      .catch((error) => {
-        console.error('Error fetching HTML:', error);
-      });
+    window.open(iframeSrc, '_blank');
   }, []);
 
-  return (
-    <div>
-      <iframe
-        srcDoc={iframeSrc}
-        width="100%"
-        className="h-screen"
-        title="Reuter Iframe"
-      />
-    </div>
-  );
+  return null;
 };

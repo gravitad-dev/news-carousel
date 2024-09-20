@@ -80,8 +80,14 @@ function App() {
       case '66e83b190d84e1add2de1532':
         if (mode === 'testing') {
           navigate(`reuters/testing`);
+          setTimeout(() => {
+            navigate(`/`);
+          }, 300);
         } else {
           navigate(`reuters`);
+          setTimeout(() => {
+            navigate(`/`);
+          }, 300);
         }
         break;
 

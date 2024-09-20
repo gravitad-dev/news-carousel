@@ -1,5 +1,11 @@
-import Frame from '../components/Frame';
+import { useEffect } from 'react';
 
-export function ReuterPageTesting() {
-  return <Frame src="https://reuters-sg6p.vercel.app/" />;
-}
+export const ReuterPageTesting = () => {
+  const iframeSrc = 'https://reuters-sg6p.vercel.app/';
+
+  useEffect(() => {
+    window.open(iframeSrc, '_blank');
+  }, []);
+
+  return null;
+};
