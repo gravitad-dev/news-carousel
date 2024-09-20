@@ -1,12 +1,12 @@
-import React, { useEffect, useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
-import { getAllProjects } from "./services/getAllProjects";
+import React, { useEffect, useState } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
+import { getAllProjects } from './services/getAllProjects';
 
 function App() {
   const [projects, setProjects] = useState(null);
   const [selectedProject, setSelectedProject] = useState(null);
   const [selectedCampaign, setSelectedCampaign] = useState(null);
-  const [mode, setMode] = useState("normal");
+  const [mode, setMode] = useState('normal');
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -14,13 +14,13 @@ function App() {
       const result = await getAllProjects();
       setProjects(result);
 
-      const savedMode = localStorage.getItem("mode");
+      const savedMode = localStorage.getItem('mode');
       if (savedMode) {
         setMode(savedMode);
       }
 
-      const savedProjectId = localStorage.getItem("selectedProject");
-      const savedCampaignId = localStorage.getItem("selectedCampaign");
+      const savedProjectId = localStorage.getItem('selectedProject');
+      const savedCampaignId = localStorage.getItem('selectedCampaign');
 
       if (savedProjectId) {
         const project = result.find((p) => p._id === savedProjectId);
@@ -42,8 +42,8 @@ function App() {
     const project = projects.find((p) => p._id === projectId);
     setSelectedProject(project);
     setSelectedCampaign(null);
-    localStorage.setItem("selectedProject", projectId);
-    localStorage.removeItem("selectedCampaign");
+    localStorage.setItem('selectedProject', projectId);
+    localStorage.removeItem('selectedCampaign');
   };
 
   const handleCampaignChange = (e) => {
@@ -52,26 +52,44 @@ function App() {
       (c) => c.id === campaignId
     );
     setSelectedCampaign(campaign);
-    localStorage.setItem("selectedCampaign", campaignId);
+    localStorage.setItem('selectedCampaign', campaignId);
   };
 
   const handleModeChange = (e) => {
     const newMode = e.target.value;
     setMode(newMode);
-    localStorage.setItem("mode", newMode);
+    localStorage.setItem('mode', newMode);
   };
 
   const goToAnalytics = () => {
-    if (selectedProject && selectedCampaign) {
-      if (mode === "testing") {
-        navigate(
-          `/analytics/testing/${selectedProject._id}/${selectedCampaign.id}`
-        );
-      } else {
-        navigate(`/analytics/${selectedProject._id}/${selectedCampaign.id}`);
-      }
+    switch (selectedCampaign.id) {
+      case '66e4bfbb5619781343dcddaa':
+        if (mode === 'testing') {
+          navigate(`pais/testing`);
+        } else {
+          navigate(`pais`);
+        }
+        break;
+      case '66e4c03d5619781343dcdddd':
+        if (mode === 'testing') {
+          navigate(`cnn/testing`);
+        } else {
+          navigate(`cnn`);
+        }
+        break;
+      case '66e83b190d84e1add2de1532':
+        if (mode === 'testing') {
+          navigate(`reuters/testing`);
+        } else {
+          navigate(`reuters`);
+        }
+        break;
+
+      default:
+        break;
     }
   };
+
   //2c2c2c
   return (
     <div className="bg-[#264653] w-full h-[100vh] flex flex-col gap-8 align items-center">
@@ -92,38 +110,6 @@ function App() {
             <option value="testing">Testing (Clicks)</option>
           </select>
         </div>
-        {/* <div className="flex flex-col gap-2 bg-gray-700 w-[260px] px-8 py-4 rounded-md shadow-lg mt-5">
-        <Link
-          to={mode === "testing" ? "/cnn/testing" : "/cnn"}
-          className="text-gray-300 hover:text-white"
-        >
-          Cnn
-        </Link>
-        <Link
-          to={mode === "testing" ? "/pais/testing" : "/pais"}
-          className="text-gray-300 hover:text-white"
-        >
-          El país
-        </Link>
-        <Link
-          to={mode === "testing" ? "/reuters/testing" : "/reuters"}
-          className="text-gray-300 hover:text-white"
-        >
-          Reuters
-        </Link>
-      </div> */}
-
-        {/* <div className="flex flex-col gap-2 bg-gray-700 w-[260px] px-8 py-4 rounded-md shadow-lg mt-5">
-        <p className="text-gray-300">
-          To edit the content of the carousels go to:{" "}
-        </p>
-        <a
-          href="https://hygraph.com/"
-          className="text-white hover:text-red-400"
-        >
-          Hygraph
-        </a>
-      </div> */}
 
         <div className="flex flex-col gap-2 bg-[#e9c46a] w-[260px] px-8 py-4 rounded-md shadow-lg mt-5">
           <label className="text-white font-semibold text-lg">
@@ -132,7 +118,7 @@ function App() {
           <select
             className="h-10 rounded-sm p-2"
             onChange={handleProjectChange}
-            value={selectedProject?._id || ""}
+            value={selectedProject?._id || ''}
           >
             <option value="">Select a project</option>
             {projects &&
@@ -152,7 +138,7 @@ function App() {
             <select
               className="h-10 rounded-sm p-2"
               onChange={handleCampaignChange}
-              value={selectedCampaign?.id || ""}
+              value={selectedCampaign?.id || ''}
             >
               <option value="">Select a campaign</option>
               {selectedProject.advertisingIds.map((campaign) => (
@@ -169,8 +155,8 @@ function App() {
           onClick={goToAnalytics}
           className={`text-gray-300 font-semibold hover:text-white ${
             selectedProject && selectedCampaign
-              ? "cursor-pointer"
-              : "cursor-not-allowed"
+              ? 'cursor-pointer'
+              : 'cursor-not-allowed'
           }`}
           disabled={!selectedProject || !selectedCampaign}
         >

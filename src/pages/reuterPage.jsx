@@ -1,35 +1,14 @@
-import React, { Suspense, lazy, useEffect, useState } from 'react';
-import { getReutersData } from '@/services/graphql.services';
+import React, { useState, useEffect } from 'react';
 
-//components
-const CarouselAds = lazy(() => import('@/components/CarouselAds'));
-const Frame = lazy(() => import('@/components/Frame'));
-
-// Works also with SSR as expected
 export function ReuterPage() {
-  const [data, setData] = useState(null);
+  const [content, setContent] = useState(null);
 
   useEffect(() => {
-    const fetchData = async () => {
-      try {
-        let result = await getReutersData();
-        setData(result);
-      } catch (error) {
-        console.error('Error fetching data:', error);
-      }
-    };
-    fetchData();
+    fetch('/proxy/reuters')
+      .then((response) => response.text())
+      .then((data) => setContent(data))
+      .catch((error) => console.error('Error:', error));
   }, []);
 
-  //console.log(import.meta.env.VITE_SITE);
-
-  return (
-    <div className="bg-[#2c2c2c] w-full h-[100vh]">
-      <div className="adsConatiner">
-        <Suspense fallback={<p>Loading...</p>}>
-          {data && <CarouselAds data={data} />}
-        </Suspense>
-      </div>
-    </div>
-  );
+  return <div dangerouslySetInnerHTML={{ __html: content }} />;
 }
