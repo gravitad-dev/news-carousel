@@ -63,21 +63,21 @@ function App() {
 
   const goToAnalytics = () => {
     switch (selectedCampaign.id) {
-      case '66e4bfbb5619781343dcddaa':
+      case '66f1f15274aaefcd7a4372bc':
         if (mode === 'testing') {
           navigate(`pais/testing`);
         } else {
           navigate(`pais`);
         }
         break;
-      case '66e4c03d5619781343dcdddd':
+      case '66f1f27a74aaefcd7a437760':
         if (mode === 'testing') {
           navigate(`cnn/testing`);
         } else {
           navigate(`cnn`);
         }
         break;
-      case '66e83b190d84e1add2de1532':
+      case '66f1f83974aaefcd7a438885':
         if (mode === 'testing') {
           navigate(`reuters/testing`);
           setTimeout(() => {
