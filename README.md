@@ -1,10 +1,8 @@
-# Proyecto de Publicidad Dinámica
-
-Este proyecto tiene como objetivo mostrar contenido publicitario dinámico mediante el uso de iframes, cargando diferentes URLs dependiendo de las campañas activas. El componente principal que maneja este contenido es el `Frame`, que encapsula un iframe y permite mostrar las páginas correspondientes. Además, las rutas están estructuradas para cargar diferentes versiones de las páginas de campañas, tanto en su versión estándar como en la de testing.
+# Proyecto Carousel
 
 ## Funcionalidad General
 
-El proyecto funciona cargando diferentes campañas publicitarias de sus respectivos proyectos, que se muestran en un carrusel de imágenes. Para esto existen páginas específicas que cargan contenido externo (sitios como CNN, El País, Reuters) mediante iframes para ofrecer contenido relevante a los usuarios, en conjunto con los banners de publicidad.
+El proyecto permite la visualización de diferentes campañas publicitarias mediante un carrusel de imágenes. Los usuarios pueden interactuar con un menú desplegable (select) que les permite elegir entre varias campañas publicitarias. Al seleccionar una campaña, se cargan páginas específicas que muestran contenido externo de sitios como CNN, El País y Reuters a través de iframes. Esto proporciona a los usuarios información relevante mientras se presentan banners publicitarios relacionados.
 
 ### Rutas principales:
 
@@ -19,89 +17,101 @@ El proyecto funciona cargando diferentes campañas publicitarias de sus respecti
 
 ## Páginas específicas de campañas
 
-### Páginas de CNN
-
-- **`CnnPage.jsx`**: Carga la página de CNN usando un iframe dentro del componente `Frame`. La URL usada para la versión estándar de CNN es: `https://cnn-2.vercel.app/`.
-
-  ```jsx
-  import Frame from '../components/Frame';
-
-  export function CnnPage() {
-    return <Frame src="https://cnn-2.vercel.app/" />;
-  }
-  ```
-
-- **`CnnPageTesting.jsx`**: Similar a `CnnPage`, pero usa una URL diferente para propósitos de testing: `https://cnn-three.vercel.app/`.
-
-  ```jsx
-  import Frame from '../components/Frame';
-
-  export function CnnPageTesting() {
-    return <Frame src="https://cnn-three.vercel.app/" />;
-  }
-  ```
-
 ### Páginas de El País
 
-- **`PaisPage.jsx`**: Carga la página de El País dentro de un iframe utilizando el componente `Frame`. La URL correspondiente es `https://el-pais2.vercel.app/`.
+#### PaisPage.jsx
 
-  ```jsx
-  import Frame from '../components/Frame';
+Carga la página de El País dentro de un iframe utilizando el componente Frame. La URL correspondiente es [https://el-pais2.vercel.app/](https://el-pais2.vercel.app/).
 
-  export function PaisPage() {
-    return <Frame src="https://el-pais2.vercel.app/" />;
-  }
-  ```
+```jsx
+import Frame from '../components/Frame';
 
-- **`PaisPageTesting.jsx`**: Utiliza una URL diferente para la versión de testing de la página de El País: `https://el-pais-three.vercel.app/`.
+export function PaisPage() {
+  return <Frame src="https://el-pais2.vercel.app/" />;
+}
+```
 
-  ```jsx
-  import Frame from '../components/Frame';
+#### PaisPageTesting.jsx
 
-  export function PaisPageTesting() {
-    return <Frame src="https://el-pais-three.vercel.app/" />;
-  }
-  ```
+Utiliza una URL diferente para la versión de testing de la página de El País: [https://el-pais-three.vercel.app/](https://el-pais-three.vercel.app/).
+
+```jsx
+import Frame from '../components/Frame';
+
+export function PaisPageTesting() {
+  return <Frame src="https://el-pais-three.vercel.app/" />;
+}
+```
+
+### Páginas de CNN
+
+#### CnnPage.jsx
+
+Carga la página de CNN usando un iframe dentro del componente Frame. La URL usada para la versión estándar de CNN es: [https://cnn-2.vercel.app/](https://cnn-2.vercel.app/).
+
+```jsx
+import Frame from '../components/Frame';
+
+export function CnnPage() {
+  return <Frame src="https://cnn-2.vercel.app/" />;
+}
+```
+
+#### CnnPageTesting.jsx
+
+Similar a CnnPage, pero usa una URL diferente para propósitos de testing: [https://cnn-three.vercel.app/](https://cnn-three.vercel.app/).
+
+```jsx
+import Frame from '../components/Frame';
+
+export function CnnPageTesting() {
+  return <Frame src="https://cnn-three.vercel.app/" />;
+}
+```
 
 ### Páginas de Reuters
 
-- **`ReuterPage.jsx`**: A diferencia de las demás páginas, esta abre la URL de Reuters en una nueva pestaña usando `window.open`. La URL utilizada es: `https://reuters2.vercel.app/`.
+#### ReuterPage.jsx
 
-  ```jsx
-  import { useEffect } from 'react';
+A diferencia de las demás páginas, esta abre la URL de Reuters en una nueva pestaña usando window.open. La URL utilizada es: [https://reuters2.vercel.app/](https://reuters2.vercel.app/).
 
-  export const ReuterPage = () => {
-    const iframeSrc = 'https://reuters2.vercel.app/';
+```jsx
+import { useEffect } from 'react';
 
-    useEffect(() => {
-      window.open(iframeSrc, '_blank');
-    }, []);
+export const ReuterPage = () => {
+  const iframeSrc = 'https://reuters2.vercel.app/';
 
-    return null;
-  };
-  ```
+  useEffect(() => {
+    window.open(iframeSrc, '_blank');
+  }, []);
 
-- **`ReuterPageTesting.jsx`**: Similar a `ReuterPage`, pero con una URL de testing: `https://reuters-sg6p.vercel.app/`.
+  return null;
+};
+```
 
-  ```jsx
-  import { useEffect } from 'react';
+#### ReuterPageTesting.jsx
 
-  export const ReuterPageTesting = () => {
-    const iframeSrc = 'https://reuters-sg6p.vercel.app/';
+Similar a ReuterPage, pero con una URL de testing: [https://reuters-sg6p.vercel.app/](https://reuters-sg6p.vercel.app/).
 
-    useEffect(() => {
-      window.open(iframeSrc, '_blank');
-    }, []);
+```jsx
+import { useEffect } from 'react';
 
-    return null;
-  };
-  ```
+export const ReuterPageTesting = () => {
+  const iframeSrc = 'https://reuters-sg6p.vercel.app/';
 
-### Descripción del componente `Frame`
+  useEffect(() => {
+    window.open(iframeSrc, '_blank');
+  }, []);
 
-El componente `Frame` encapsula un iframe, permitiendo que las URLs se inyecten dinámicamente en la aplicación de una manera segura y controlada. Aquí se cargan las URLs de las diferentes campañas publicitarias, incluyendo las versiones de testing.
+  return null;
+};
+```
 
-Ejemplo del componente `Frame`:
+### Descripción del componente Frame
+
+El componente Frame encapsula un iframe, permitiendo que las URLs se inyecten dinámicamente en la aplicación de una manera segura y controlada. Aquí se cargan las URLs de las diferentes campañas publicitarias, incluyendo las versiones de testing.
+
+Ejemplo del componente Frame:
 
 ```jsx
 import React from 'react';
