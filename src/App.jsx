@@ -166,7 +166,7 @@ function App() {
           }`}
           disabled={!selectedProject || !selectedCampaign}
         >
-          <span className="text-[#fefcfb] border-2 border-teal-400 font-semibold flex w-full items-center justify-center gap-2 p-5 rounded-[16px]">
+          <span className="transition-all hover:bg-[#1a3038] text-[#fefcfb] border-2 border-teal-400 font-semibold flex w-full items-center justify-center gap-2 p-5 rounded-[16px]">
             GO TO PAGE
             <svg
               width="32"
