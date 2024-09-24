@@ -7,11 +7,11 @@ El proyecto permite la visualización de diferentes campañas publicitarias medi
 ### Rutas principales:
 
 - **/cnn**: Carga la página de CNN.
-- **/cnn-testing**: Carga la versión de testing de CNN.
+- **/cnn/testing**: Carga la versión de testing de CNN.
 - **/pais**: Carga la página de El País.
-- **/pais-testing**: Carga la versión de testing de El País.
+- **/pais/testing**: Carga la versión de testing de El País.
 - **/reuters**: Abre la página de Reuters en una nueva pestaña.
-- **/reuters-testing**: Abre la versión de testing de Reuters en una nueva pestaña.
+- **/reuters/testing**: Abre la versión de testing de Reuters en una nueva pestaña.
 
 ---
 
