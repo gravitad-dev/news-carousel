@@ -17,16 +17,19 @@ COPY . .
 RUN npm run build
 
 # Etapa 2: Servir la aplicación
-FROM nginx:1.25
+FROM node:18 AS serve
 
-# Copia los archivos estáticos generados a la carpeta de Nginx
-COPY --from=build /app/dist /usr/share/nginx/html
+# Instala la herramienta "serve" globalmente
+RUN npm install -g serve
 
-# Copia la configuración de Nginx personalizada (opcional)
-COPY nginx.conf /etc/nginx/conf.d/default.conf
+# Copia los archivos estáticos generados desde la etapa de construcción
+COPY --from=build /app/dist /app
 
-# Expone el puerto 80
-EXPOSE 80
+# Establece el directorio de trabajo para servir los archivos estáticos
+WORKDIR /app
 
-# Comando para iniciar Nginx
-CMD ["nginx", "-g", "daemon off;"]
+# Expone el puerto 3001
+EXPOSE 3001
+
+# Comando para iniciar "serve"
+CMD ["serve", "-s", ".", "-l", "3001"]
