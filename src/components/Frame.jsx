@@ -1,16 +1,28 @@
-import React from "react";
+import React from 'react';
 
-function Frame({}) {
-  //console.log(import.meta.env.VITE_PAGE_LOAD);
+const Frame = ({ src }) => {
+  const iframeStyle = {
+    position: 'fixed',
+    top: 0,
+    left: 0,
+    width: '100%',
+    height: '100%',
+    border: 'none',
+    margin: 0,
+    padding: 0,
+    overflow: 'hidden',
+    zIndex: 9999,
+  };
+
   return (
     <iframe
-      className="aplication"
-      src={`/api/${import.meta.env.VITE_PAGE_LOAD}`}
-      width="100%"
-      height="100%"
+      src={src}
+      style={iframeStyle}
+      title="Full Screen Iframe"
       frameBorder="0"
-    ></iframe>
+      allowFullScreen
+    />
   );
-}
+};
 
 export default Frame;
