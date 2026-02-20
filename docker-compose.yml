@@ -1,0 +1,7 @@
+services:
+  zafir-analytics-carousel:
+    build: .
+    container_name: zafir-analytics-carousel
+#    ports:
+#      - "5000:5000"
+    restart: unless-stopped
