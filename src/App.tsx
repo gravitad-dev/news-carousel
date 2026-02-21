@@ -114,24 +114,28 @@ function App() {
   };
 
   // Auto-click logic
-  useEffect(() => {
-    let timer: ReturnType<typeof setTimeout>;
-    if (isAutoClicking) {
-      timer = setTimeout(async () => {
-        const randomBatch =
-          Math.floor(Math.random() * (maxBatchSize - minBatchSize + 1)) +
-          minBatchSize;
-        await handleBannerClick(undefined, randomBatch);
-      }, autoClickInterval * 1000);
-    }
-    return () => clearTimeout(timer);
-  }, [
-    isAutoClicking,
-    totalSimulatedClicks,
-    autoClickInterval,
-    minBatchSize,
-    maxBatchSize
-  ]);
+  useEffect(
+    () => {
+      let timer: ReturnType<typeof setTimeout>;
+      if (isAutoClicking) {
+        timer = setTimeout(async () => {
+          const randomBatch =
+            Math.floor(Math.random() * (maxBatchSize - minBatchSize + 1)) +
+            minBatchSize;
+          await handleBannerClick(undefined, randomBatch);
+        }, autoClickInterval * 1000);
+      }
+      return () => clearTimeout(timer);
+    },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [
+      isAutoClicking,
+      totalSimulatedClicks,
+      autoClickInterval,
+      minBatchSize,
+      maxBatchSize
+    ]
+  );
 
   const startAutoClick = () => {
     if (!selectedCampaignId) return;
@@ -275,7 +279,7 @@ function App() {
           </div>
 
           {/* Auto-Click Panel */}
-          <div className="bg-gray-800 rounded-lg p-4 space-y-3 border border-gray-700">
+          <div className="bg-gray-800 rounded-lg p-4 space-y-2 border border-gray-700">
             <h3 className="text-xs font-bold uppercase text-blue-400 tracking-wider flex items-center gap-2">
               <MousePointerClick size={14} /> Auto-Clicker
             </h3>
@@ -332,9 +336,9 @@ function App() {
               onClick={isAutoClicking ? stopAutoClick : startAutoClick}
               disabled={!selectedCampaignId}
               className={clsx(
-                "w-full py-2 rounded text-xs font-bold transition-all uppercase tracking-widest",
+                "w-full py-2 rounded text-xs font-bold transition-colors uppercase tracking-widest",
                 isAutoClicking
-                  ? "bg-red-600 animate-pulse text-white hover:bg-red-700"
+                  ? "bg-red-600/90 text-white hover:bg-red-700 animate-[pulse_4s_infinite]"
                   : "bg-blue-600 text-white hover:bg-blue-700 disabled:bg-gray-700 disabled:text-gray-500"
               )}
             >
@@ -361,18 +365,20 @@ function App() {
         </div>
 
         {/* Status Area */}
-        <div className="mt-auto pt-6 border-t border-gray-800">
+        <div className="mt-auto pt-2 border-t border-gray-800">
           <div
             className={clsx(
-              "p-4 rounded flex items-center gap-3 transition-all duration-300",
-              clickStatus === "idle" && "bg-gray-800 text-gray-400",
+              "p-4 rounded flex items-center gap-3",
+              clickStatus === "idle" && "bg-gray-800/50 text-gray-400",
               clickStatus === "success" &&
-                "bg-green-900/50 text-green-400 border border-green-800",
+                "bg-green-950/40 text-green-400 border border-green-800/30",
               clickStatus === "error" &&
-                "bg-red-900/50 text-red-400 border border-red-800"
+                "bg-red-950/40 text-red-400 border border-red-800/30"
             )}
           >
-            {clickStatus === "idle" && <MousePointerClick size={18} />}
+            {clickStatus === "idle" && (
+              <MousePointerClick size={18} className="opacity-50" />
+            )}
             {clickStatus === "success" && <CheckCircle2 size={18} />}
             {clickStatus === "error" && <AlertCircle size={18} />}
 
