@@ -21,6 +21,9 @@ const PORTAL_URLS: Record<PortalType, string> = {
   cnn: "https://edition.cnn.com"
 };
 
+const BATCH_MIN_LIMIT = 1;
+const BATCH_MAX_LIMIT = 10;
+
 const COUNTRIES = ["USA", "POR", "GBR", "BRA", "ITA", "ESP", "CAN"];
 
 function App() {
@@ -140,6 +143,30 @@ function App() {
   const startAutoClick = () => {
     if (!selectedCampaignId) return;
     setIsAutoClicking(true);
+  };
+
+  const handleMinBatchSizeChange = (value: number) => {
+    const normalizedMin = Math.max(
+      BATCH_MIN_LIMIT,
+      Math.min(value, BATCH_MAX_LIMIT)
+    );
+    setMinBatchSize(normalizedMin);
+
+    if (normalizedMin > maxBatchSize) {
+      setMaxBatchSize(normalizedMin);
+    }
+  };
+
+  const handleMaxBatchSizeChange = (value: number) => {
+    const normalizedMax = Math.max(
+      BATCH_MIN_LIMIT,
+      Math.min(value, BATCH_MAX_LIMIT)
+    );
+    setMaxBatchSize(normalizedMax);
+
+    if (normalizedMax < minBatchSize) {
+      setMinBatchSize(normalizedMax);
+    }
   };
 
   const stopAutoClick = () => {
@@ -311,10 +338,12 @@ function App() {
                   <span className="text-[9px] text-gray-500 w-6">Min</span>
                   <input
                     type="range"
-                    min="1"
-                    max={maxBatchSize}
+                    min={BATCH_MIN_LIMIT}
+                    max={BATCH_MAX_LIMIT}
                     value={minBatchSize}
-                    onChange={(e) => setMinBatchSize(Number(e.target.value))}
+                    onChange={(e) =>
+                      handleMinBatchSizeChange(Number(e.target.value))
+                    }
                     className="flex-1 h-1 bg-gray-700 rounded-lg appearance-none cursor-pointer accent-blue-600"
                   />
                 </div>
@@ -322,10 +351,12 @@ function App() {
                   <span className="text-[9px] text-gray-500 w-6">Max</span>
                   <input
                     type="range"
-                    min={minBatchSize}
-                    max="10"
+                    min={BATCH_MIN_LIMIT}
+                    max={BATCH_MAX_LIMIT}
                     value={maxBatchSize}
-                    onChange={(e) => setMaxBatchSize(Number(e.target.value))}
+                    onChange={(e) =>
+                      handleMaxBatchSizeChange(Number(e.target.value))
+                    }
                     className="flex-1 h-1 bg-gray-700 rounded-lg appearance-none cursor-pointer accent-blue-400"
                   />
                 </div>
