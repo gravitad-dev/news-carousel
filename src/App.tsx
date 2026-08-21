@@ -17,7 +17,7 @@ import type { Campaign, PortalType, Project } from "./types";
 const PORTAL_URLS: Record<PortalType, string> = {
   elpais: "https://elpais.com",
   elmundo: "https://www.elmundo.es",
-  nytimes: "https://www.nytimes.com",
+  bbc: "https://www.bbc.com/mundo",
   cnn: "https://edition.cnn.com"
 };
 
@@ -202,7 +202,7 @@ function App() {
   }
 
   return (
-    <div className="min-h-screen flex flex-col md:flex-row font-sans text-gray-900 overflow-hidden">
+    <div className="min-h-screen flex flex-col md:flex-row font-sans text-gray-900 overflow-hidden overflow-x-hidden">
       {/* Single toggle button for sidebar (always visible) */}
 
       <aside
@@ -279,23 +279,31 @@ function App() {
               <label className="text-xs uppercase tracking-wider text-gray-400 font-bold">
                 Target Portal (Live View)
               </label>
+              {!selectedCampaignId && (
+                <p className="text-[11px] text-amber-300/80">
+                  Select a campaign to enable
+                </p>
+              )}
               <div className="grid grid-cols-1 gap-2">
-                {(["elpais", "elmundo", "nytimes", "cnn"] as PortalType[]).map(
+                {(["elpais", "elmundo", "bbc", "cnn"] as PortalType[]).map(
                   (portal) => (
                     <button
                       key={portal}
                       onClick={() => setSelectedPortal(portal)}
+                      disabled={!selectedCampaignId}
                       className={clsx(
                         "p-3 rounded text-sm font-medium transition text-left border",
+                        !selectedCampaignId &&
+                          "opacity-40 cursor-not-allowed",
                         selectedPortal === portal
                           ? "bg-blue-600 border-blue-500 text-white"
-                          : "bg-gray-800 border-gray-700 text-gray-300 hover:bg-gray-700"
+                          : "bg-gray-800 border-gray-700 text-gray-300 hover:bg-gray-700 disabled:hover:bg-gray-800"
                       )}
                     >
                       <span>
                         {portal === "elpais" && "El País"}
                         {portal === "elmundo" && "El Mundo"}
-                        {portal === "nytimes" && "The New York Times"}
+                        {portal === "bbc" && "BBC Mundo"}
                         {portal === "cnn" && "CNN"}
                       </span>
                     </button>
@@ -306,7 +314,12 @@ function App() {
           </div>
 
           {/* Auto-Click Panel */}
-          <div className="bg-gray-800 rounded-lg p-4 space-y-2 border border-gray-700">
+          <div
+            className={clsx(
+              "bg-gray-800 rounded-lg p-4 space-y-2 border border-gray-700 transition-opacity",
+              !selectedCampaignId && "opacity-50"
+            )}
+          >
             <h3 className="text-xs font-bold uppercase text-blue-400 tracking-wider flex items-center gap-2">
               <MousePointerClick size={14} /> Auto-Clicker
             </h3>
@@ -319,8 +332,9 @@ function App() {
                 type="number"
                 min="1"
                 value={autoClickInterval}
+                disabled={!selectedCampaignId}
                 onChange={(e) => setAutoClickInterval(Number(e.target.value))}
-                className="w-full bg-gray-900 border border-gray-600 rounded px-2 py-1 text-sm outline-none focus:border-blue-500"
+                className="w-full bg-gray-900 border border-gray-600 rounded px-2 py-1 text-sm outline-none focus:border-blue-500 disabled:opacity-50 disabled:cursor-not-allowed"
               />
             </div>
 
@@ -341,10 +355,11 @@ function App() {
                     min={BATCH_MIN_LIMIT}
                     max={BATCH_MAX_LIMIT}
                     value={minBatchSize}
+                    disabled={!selectedCampaignId}
                     onChange={(e) =>
                       handleMinBatchSizeChange(Number(e.target.value))
                     }
-                    className="flex-1 h-1 bg-gray-700 rounded-lg appearance-none cursor-pointer accent-blue-600"
+                    className="flex-1 h-1 bg-gray-700 rounded-lg appearance-none cursor-pointer accent-blue-600 disabled:opacity-50 disabled:cursor-not-allowed"
                   />
                 </div>
                 <div className="flex items-center gap-2">
@@ -354,10 +369,11 @@ function App() {
                     min={BATCH_MIN_LIMIT}
                     max={BATCH_MAX_LIMIT}
                     value={maxBatchSize}
+                    disabled={!selectedCampaignId}
                     onChange={(e) =>
                       handleMaxBatchSizeChange(Number(e.target.value))
                     }
-                    className="flex-1 h-1 bg-gray-700 rounded-lg appearance-none cursor-pointer accent-blue-400"
+                    className="flex-1 h-1 bg-gray-700 rounded-lg appearance-none cursor-pointer accent-blue-400 disabled:opacity-50 disabled:cursor-not-allowed"
                   />
                 </div>
               </div>
@@ -434,7 +450,12 @@ function App() {
       )}
 
       {/* Main Preview Area */}
-      <main className="flex-1 bg-gray-200 overflow-hidden h-screen relative">
+      <main
+        className={clsx(
+          "flex-1 bg-gray-200 overflow-hidden overflow-x-hidden h-screen relative transition-all duration-300",
+          isSidebarOpen ? "md:ml-64" : "md:ml-0"
+        )}
+      >
         {selectedCampaignId ? (
           <RealPortal
             bannerUrl={bannerUrl}
@@ -445,13 +466,32 @@ function App() {
             campaignName={currentCampaign?.title}
           />
         ) : (
-          <div className="h-full flex flex-col items-center justify-center text-gray-400 space-y-4">
-            <div className="w-24 h-24 bg-gray-300 rounded-full flex items-center justify-center">
-              <Play size={48} className="text-gray-400 ml-2" />
+          <div className="h-full flex flex-col items-center justify-center p-8 bg-gradient-to-b from-gray-50 to-gray-100">
+            <div className="max-w-md w-full bg-white rounded-2xl shadow-sm border border-gray-200 p-8 flex flex-col items-center text-center space-y-6">
+              <img src={logo} alt="Zafir" className="h-10 opacity-70" />
+              <div className="w-20 h-20 bg-blue-50 rounded-2xl flex items-center justify-center border border-blue-100">
+                <Play size={32} className="text-blue-500 ml-0.5" />
+              </div>
+              <div className="space-y-3">
+                <h3 className="text-xl font-semibold text-gray-800">
+                  Select a project and campaign
+                </h3>
+                <p className="text-base text-gray-500 leading-relaxed">
+                  Pick a project and campaign in the sidebar to load a real
+                  portal and start simulating traffic.
+                </p>
+              </div>
+              {!selectedProjectId && (
+                <p className="text-sm text-amber-700 bg-amber-50 border border-amber-200 rounded-lg px-4 py-2.5 w-full">
+                  Start by selecting a project above
+                </p>
+              )}
+              {selectedProjectId && !selectedCampaignId && (
+                <p className="text-sm text-blue-700 bg-blue-50 border border-blue-200 rounded-lg px-4 py-2.5 w-full">
+                  Now pick a campaign to enable portals
+                </p>
+              )}
             </div>
-            <p className="text-xl font-medium">
-              Select a Project and Campaign to start
-            </p>
           </div>
         )}
       </main>

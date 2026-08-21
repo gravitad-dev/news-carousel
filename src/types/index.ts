@@ -19,7 +19,7 @@ export interface Project {
   advertisingIds: string[]; // IDs de las campañas asociadas
 }
 
-export type PortalType = "elpais" | "elmundo" | "nytimes" | "cnn";
+export type PortalType = "elpais" | "elmundo" | "bbc" | "cnn";
 
 export interface PortalTemplateProps {
   bannerUrl: string;
