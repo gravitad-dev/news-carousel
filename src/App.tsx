@@ -15,10 +15,10 @@ import { getCampaigns, getProjects, trackClick } from "./services/api";
 import type { Campaign, PortalType, Project } from "./types";
 
 const PORTAL_URLS: Record<PortalType, string> = {
-  elpais: "https://elpais.com",
   elmundo: "https://www.elmundo.es",
   bbc: "https://www.bbc.com/mundo",
-  cnn: "https://edition.cnn.com"
+  cnn: "https://edition.cnn.com",
+  abc: "https://www.abc.es"
 };
 
 const BATCH_MIN_LIMIT = 1;
@@ -32,7 +32,7 @@ function App() {
 
   const [selectedProjectId, setSelectedProjectId] = useState<string>("");
   const [selectedCampaignId, setSelectedCampaignId] = useState<string>("");
-  const [selectedPortal, setSelectedPortal] = useState<PortalType>("elpais");
+  const [selectedPortal, setSelectedPortal] = useState<PortalType>("elmundo");
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
 
   const [loading, setLoading] = useState(true);
@@ -285,7 +285,7 @@ function App() {
                 </p>
               )}
               <div className="grid grid-cols-1 gap-2">
-                {(["elpais", "elmundo", "bbc", "cnn"] as PortalType[]).map(
+                {(["elmundo", "bbc", "abc", "cnn"] as PortalType[]).map(
                   (portal) => (
                     <button
                       key={portal}
@@ -301,9 +301,9 @@ function App() {
                       )}
                     >
                       <span>
-                        {portal === "elpais" && "El País"}
                         {portal === "elmundo" && "El Mundo"}
                         {portal === "bbc" && "BBC Mundo"}
+                        {portal === "abc" && "ABC"}
                         {portal === "cnn" && "CNN"}
                       </span>
                     </button>
