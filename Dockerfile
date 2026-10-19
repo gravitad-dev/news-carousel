@@ -1,35 +1,32 @@
-# Etapa 1: Construcción
-FROM node:18 AS build
+# syntax=docker/dockerfile:1
 
-# Establece el directorio de trabajo en el contenedor
+# --- build -------------------------------------------------------------------
+# node:22 es obligatorio: Vite 7 requiere Node ^20.19 || >=22.12 (Node 18 falla).
+FROM node:22-bookworm-slim AS build
 WORKDIR /app
 
-# Copia los archivos de dependencia
 COPY package.json package-lock.json ./
+RUN npm ci --no-audit --no-fund
 
-# Instala las dependencias
-RUN npm install
+# Vite resuelve las variables VITE_* en BUILD TIME: no llegan desde el runtime
+# del contenedor, hay que inyectarlas como build args (ver docker-compose.yml).
+ARG VITE_STRAPI_URL=http://localhost:1340
+ARG VITE_REALTIME_URL=http://localhost:9001
+ARG VITE_FRONTEND_URL=http://localhost:5173
+ENV VITE_STRAPI_URL=$VITE_STRAPI_URL \
+    VITE_REALTIME_URL=$VITE_REALTIME_URL \
+    VITE_FRONTEND_URL=$VITE_FRONTEND_URL
 
-# Copia el resto del código fuente al contenedor
 COPY . .
-
-# Construye la aplicación
 RUN npm run build
 
-# Etapa 2: Servir la aplicación
-FROM node:18 AS serve
+# --- serve -------------------------------------------------------------------
+FROM node:22-bookworm-slim AS serve
 
-# Instala la herramienta "serve" globalmente
 RUN npm install -g serve
 
-# Copia los archivos estáticos generados desde la etapa de construcción
-COPY --from=build /app/dist /app
-
-# Establece el directorio de trabajo para servir los archivos estáticos
 WORKDIR /app
+COPY --from=build /app/dist .
 
-# Expone el puerto 3001
 EXPOSE 3001
-
-# Comando para iniciar "serve"
 CMD ["serve", "-s", ".", "-l", "3001"]

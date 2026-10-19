@@ -1,73 +1,44 @@
-# React + TypeScript + Vite
+# Carousel — Traffic Simulator
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Simulador de tráfico de Zafir Analytics (React 19 + Vite 7 + TypeScript). Clickea banners de
+campañas sobre portales reales (clonados por el proxy de `zafir-realtime`) y así alimenta las
+métricas en tiempo real del dashboard.
 
-Currently, two official plugins are available:
+## Requisitos
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+- **Node 22** y npm (Vite 7 requiere Node `^20.19` o `>=22.12`).
+- Backend levantado: Strapi en `1340` y `zafir-realtime` en `9001`.
 
-## React Compiler
+## Variables de entorno
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+Son opcionales: si no hay `.env`, se usan los defaults. Se resuelven en **build time**.
 
-## Expanding the ESLint configuration
+| Variable | Default | Descripción |
+|---|---|---|
+| `VITE_STRAPI_URL` | `http://localhost:1340` | Base de Strapi (sin `/api`). |
+| `VITE_REALTIME_URL` | `http://localhost:9001` | Base de `zafir-realtime` (clicks, proxy y Socket.IO). |
+| `VITE_FRONTEND_URL` | `http://localhost:5173` | Reservada para el link de vuelta al dashboard. |
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+## Scripts
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+| Comando | Descripción |
+|---|---|
+| `npm run dev` | Vite (puerto libre, normalmente `5174`). |
+| `npm run build` | `tsc -b && vite build` → `dist/`. |
+| `npm run preview` | Sirve el build localmente. |
+| `npm run lint` | ESLint. |
 
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
+## Uso
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+Elegí **Proyecto → Campaña → Portal** y clickeá el banner (1 click, con país aleatorio) o arrancá
+el **auto-clicker** (intervalo y batch configurables). Los clicks viajan a `zafir-realtime`, se
+persisten en Strapi y se reflejan en el dashboard vía Socket.IO (`campaignUpdated`).
+
+## Docker
+
+```bash
+docker compose up -d --build
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
-
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
-
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
+Sirve el `dist` con `serve` (puerto `3001` adentro, **publicado en `5174`**; se cambia con
+`CAROUSEL_HOST_PORT`). Las `VITE_*` se pasan como build args y por defecto apuntan a `localhost`.

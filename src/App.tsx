@@ -63,7 +63,7 @@ function App() {
       } catch (err) {
         console.error(err);
         setError(
-          `Error connecting to Zafir Backend. Ensure it is running on port ${import.meta.env.VITE_API_URL?.split(":").pop() || "9000"}.`
+          `Error connecting to the Zafir backend. Ensure Strapi is running on ${import.meta.env.VITE_STRAPI_URL || "http://localhost:1340"}.`
         );
       } finally {
         setLoading(false);
@@ -99,9 +99,7 @@ function App() {
           ? countryCode
           : COUNTRIES[Math.floor(Math.random() * COUNTRIES.length)];
 
-      for (let i = 0; i < numClicks; i++) {
-        await trackClick(selectedCampaignId, country);
-      }
+      await trackClick(selectedCampaignId, numClicks, country);
 
       setLastSimulatedCountry(
         numClicks > 1 ? `${country} (x${numClicks})` : country

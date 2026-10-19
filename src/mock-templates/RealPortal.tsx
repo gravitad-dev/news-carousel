@@ -28,7 +28,8 @@ export const RealPortal = ({
         setLoading(true);
         setIsIframeReady(false);
         setHtml(""); // Limpiamos el contenido previo para evitar el "flicker"
-        const baseUrl = import.meta.env.VITE_API_URL || "http://localhost:9000";
+        const baseUrl =
+          import.meta.env.VITE_REALTIME_URL || "http://localhost:9001";
         const response = await fetch(
           `${baseUrl}/proxy?url=${encodeURIComponent(externalUrl)}`,
           { signal: controller.signal }
