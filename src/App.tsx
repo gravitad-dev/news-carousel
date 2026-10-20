@@ -78,18 +78,6 @@ function App() {
     (c) => c.projectId === selectedProjectId
   );
 
-  // Auto-select the first campaign of the chosen project so the portal
-  // loads without an extra manual step.
-  useEffect(() => {
-    if (
-      selectedProjectId &&
-      availableCampaigns.length > 0 &&
-      !selectedCampaignId
-    ) {
-      setSelectedCampaignId(availableCampaigns[0]._id);
-    }
-  }, [selectedProjectId, availableCampaigns, selectedCampaignId]);
-
   // Get current campaign details
   const currentCampaign = campaigns.find((c) => c._id === selectedCampaignId);
   // Get first image (or placeholder)

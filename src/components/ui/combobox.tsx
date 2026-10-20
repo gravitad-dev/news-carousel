@@ -6,7 +6,7 @@ import {
   CommandItem,
   CommandList
 } from "cmdk";
-import { Check, ChevronsUpDown } from "lucide-react";
+import { ChevronsUpDown, X } from "lucide-react";
 import * as React from "react";
 
 import { Popover, PopoverContent, PopoverTrigger } from "./popover";
@@ -45,11 +45,33 @@ export const Combobox = ({
   disabled
 }: ComboboxProps) => {
   const [open, setOpen] = React.useState(false);
+  const [search, setSearch] = React.useState("");
   const listId = React.useId();
   const selected = options.find((option) => option.value === value);
+  const searchTerms = search
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .toLocaleLowerCase()
+    .trim()
+    .split(/\s+/)
+    .filter(Boolean);
+  const filteredOptions = options.filter((option) => {
+    const searchableText = option.label
+      .normalize("NFD")
+      .replace(/[\u0300-\u036f]/g, "")
+      .toLocaleLowerCase();
+
+    return searchTerms.every((term) => searchableText.includes(term));
+  });
 
   return (
-    <Popover open={open} onOpenChange={setOpen}>
+    <Popover
+      open={open}
+      onOpenChange={(nextOpen) => {
+        setOpen(nextOpen);
+        if (!nextOpen) setSearch("");
+      }}
+    >
       <PopoverTrigger asChild>
         <button
           type="button"
@@ -75,11 +97,25 @@ export const Combobox = ({
         align="start"
         className="w-[var(--radix-popover-trigger-width)] p-0"
       >
-        <Command className="bg-gray-800 text-gray-100">
-          <CommandInput
-            placeholder={searchPlaceholder}
-            className="flex h-10 w-full border-b border-gray-700 bg-transparent px-3 text-sm text-gray-100 outline-none placeholder:text-gray-500"
-          />
+        <Command shouldFilter={false} className="bg-gray-800 text-gray-100">
+          <div className="flex items-center border-b border-gray-700">
+            <CommandInput
+              placeholder={searchPlaceholder}
+              value={search}
+              className="flex h-10 w-full bg-transparent px-3 text-sm text-gray-100 outline-none placeholder:text-gray-500"
+              onValueChange={setSearch}
+            />
+            {search && (
+              <button
+                type="button"
+                aria-label="Clear search"
+                onClick={() => setSearch("")}
+                className="mr-2 rounded p-1 text-gray-400 hover:bg-gray-700 hover:text-gray-100"
+              >
+                <X className="h-4 w-4" />
+              </button>
+            )}
+          </div>
           <CommandList
             id={listId}
             className="max-h-64 overflow-auto p-1"
@@ -88,23 +124,27 @@ export const Combobox = ({
               {emptyMessage}
             </CommandEmpty>
             <CommandGroup>
-              {options.map((option) => (
+              {filteredOptions.map((option) => (
                 <CommandItem
                   key={option.value}
-                  value={`${option.label} ${option.value}`}
+                  value={option.value}
                   onSelect={() => {
                     onChange(option.value);
                     setOpen(false);
                   }}
-                  className="flex cursor-pointer items-center gap-2 rounded px-2 py-2 text-sm text-gray-100 aria-selected:bg-gray-700"
+                  className={cn(
+                    "flex cursor-pointer items-center rounded px-2 py-2 text-sm text-gray-100 aria-selected:bg-gray-700",
+                    option.value === value && "bg-blue-900"
+                  )}
                 >
-                  <Check
+                  <span
                     className={cn(
-                      "h-4 w-4",
-                      option.value === value ? "opacity-100" : "opacity-0"
+                      "truncate",
+                      option.value === value && "text-blue-200"
                     )}
-                  />
-                  <span className="truncate">{option.label}</span>
+                  >
+                    {option.label}
+                  </span>
                 </CommandItem>
               ))}
             </CommandGroup>
