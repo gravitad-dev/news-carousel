@@ -11,6 +11,7 @@ import {
 import { useEffect, useState } from "react";
 import logo from "./assets/logoHeader.svg";
 import { RealPortal } from "./mock-templates";
+import { Combobox } from "./components/ui/combobox";
 import { getCampaigns, getProjects, trackClick } from "./services/api";
 import type { Campaign, PortalType, Project } from "./types";
 
@@ -76,6 +77,18 @@ function App() {
   const availableCampaigns = campaigns.filter(
     (c) => c.projectId === selectedProjectId
   );
+
+  // Auto-select the first campaign of the chosen project so the portal
+  // loads without an extra manual step.
+  useEffect(() => {
+    if (
+      selectedProjectId &&
+      availableCampaigns.length > 0 &&
+      !selectedCampaignId
+    ) {
+      setSelectedCampaignId(availableCampaigns[0]._id);
+    }
+  }, [selectedProjectId, availableCampaigns, selectedCampaignId]);
 
   // Get current campaign details
   const currentCampaign = campaigns.find((c) => c._id === selectedCampaignId);
@@ -232,21 +245,17 @@ function App() {
             <label className="text-xs uppercase tracking-wider text-gray-400 font-bold flex items-center gap-2">
               <Settings size={14} /> Project
             </label>
-            <select
-              value={selectedProjectId}
-              onChange={(e) => {
-                setSelectedProjectId(e.target.value);
-                setSelectedCampaignId(""); // Reset campaign
+            <Combobox
+              options={projects.map((p) => ({ value: p._id, label: p.title }))}
+              value={selectedProjectId || null}
+              onChange={(value) => {
+                setSelectedProjectId(value);
+                setSelectedCampaignId("");
               }}
-              className="w-full bg-gray-800 border border-gray-700 rounded p-2 text-sm focus:ring-2 focus:ring-blue-500 outline-none transition"
-            >
-              <option value="">Select a Project...</option>
-              {projects.map((p) => (
-                <option key={p._id} value={p._id}>
-                  {p.title}
-                </option>
-              ))}
-            </select>
+              placeholder="Select a Project..."
+              searchPlaceholder="Search projects..."
+              emptyMessage="No projects found."
+            />
           </div>
 
           {/* Campaign Selector */}
@@ -254,21 +263,18 @@ function App() {
             <label className="text-xs uppercase tracking-wider text-gray-400 font-bold flex items-center gap-2">
               <Play size={14} /> Campaign
             </label>
-            <select
-              value={selectedCampaignId}
-              onChange={(e) => setSelectedCampaignId(e.target.value)}
-              disabled={!selectedProjectId}
-              className="w-full bg-gray-800 border border-gray-700 rounded p-2 text-sm focus:ring-2 focus:ring-blue-500 outline-none transition disabled:opacity-50"
-            >
-              <option value="">Select a Campaign...</option>
-              {availableCampaigns
+            <Combobox
+              options={availableCampaigns
+                .slice()
                 .sort((a, b) => a._id.localeCompare(b._id))
-                .map((c) => (
-                  <option key={c._id} value={c._id}>
-                    {c.title}
-                  </option>
-                ))}
-            </select>
+                .map((c) => ({ value: c._id, label: c.title }))}
+              value={selectedCampaignId || null}
+              onChange={(value) => setSelectedCampaignId(value)}
+              placeholder="Select a Campaign..."
+              searchPlaceholder="Search campaigns..."
+              emptyMessage="No campaigns found."
+              disabled={!selectedProjectId}
+            />
           </div>
 
           {/* Portal Selector */}
