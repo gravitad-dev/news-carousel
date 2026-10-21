@@ -63,7 +63,10 @@ const mapCampaign = (value: unknown): Campaign => {
   return {
     _id: asString(raw.documentId) ?? asString(raw.id) ?? "",
     title: asString(raw.title) ?? "",
-    images: asArray(raw.images).map(mapImage),
+    // Deactivated banners must not be shown in the carousel.
+    images: asArray(raw.images)
+      .map(mapImage)
+      .filter((image) => image.active !== false),
     active: asBoolean(raw.active) ?? true,
     projectId: asString(project?.documentId) ?? ""
   };
