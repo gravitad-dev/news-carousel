@@ -10,7 +10,7 @@ services:
         VITE_STRAPI_URL: ${VITE_STRAPI_URL:-http://localhost:1340}
         VITE_REALTIME_URL: ${VITE_REALTIME_URL:-http://localhost:9001}
         VITE_FRONTEND_URL: ${VITE_FRONTEND_URL:-http://localhost:5173}
-    container_name: zafir-analytics-carousel
+    container_name: zafir-analytics-carousel-dev
     restart: unless-stopped
     ports:
-      - "${CAROUSEL_HOST_PORT:-5174}:3001"
+      - "${CAROUSEL_HOST_PORT:-5175}:3001"
