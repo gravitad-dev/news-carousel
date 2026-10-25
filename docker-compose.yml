@@ -5,10 +5,9 @@ services:
     build:
       context: .
       # VITE_* se hornean en el bundle (build time). En produccion apuntalas a la
-      # URL publica de Strapi/realtime.
+      # URL publica de Strapi.
       args:
         VITE_STRAPI_URL: ${VITE_STRAPI_URL:-http://localhost:1340}
-        VITE_REALTIME_URL: ${VITE_REALTIME_URL:-http://localhost:9001}
         VITE_FRONTEND_URL: ${VITE_FRONTEND_URL:-http://localhost:5173}
     container_name: zafir-analytics-carousel-dev
     restart: unless-stopped

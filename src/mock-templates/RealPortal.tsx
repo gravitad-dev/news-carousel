@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { getPortalProxyUrl } from "../services/api";
 import type { PortalTemplateProps } from "../types";
 
 export const RealPortal = ({
@@ -28,12 +29,9 @@ export const RealPortal = ({
         setLoading(true);
         setIsIframeReady(false);
         setHtml(""); // Limpiamos el contenido previo para evitar el "flicker"
-        const baseUrl =
-          import.meta.env.VITE_REALTIME_URL || "http://localhost:9001";
-        const response = await fetch(
-          `${baseUrl}/proxy?url=${encodeURIComponent(externalUrl)}`,
-          { signal: controller.signal }
-        );
+        const response = await fetch(getPortalProxyUrl(externalUrl), {
+          signal: controller.signal
+        });
         if (!response.ok) {
           throw new Error(
             `Proxy request failed with status ${response.status}`

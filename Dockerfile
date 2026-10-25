@@ -11,10 +11,8 @@ RUN npm ci --no-audit --no-fund
 # Vite resuelve las variables VITE_* en BUILD TIME: no llegan desde el runtime
 # del contenedor, hay que inyectarlas como build args (ver docker-compose.yml).
 ARG VITE_STRAPI_URL=http://localhost:1340
-ARG VITE_REALTIME_URL=http://localhost:9001
 ARG VITE_FRONTEND_URL=http://localhost:5173
 ENV VITE_STRAPI_URL=$VITE_STRAPI_URL \
-    VITE_REALTIME_URL=$VITE_REALTIME_URL \
     VITE_FRONTEND_URL=$VITE_FRONTEND_URL
 
 COPY . .
